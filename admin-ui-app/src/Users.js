@@ -7,6 +7,7 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const [searchString, setSearchString] = useState("");
   const [usersPerPage, setUsersPerPage] = useState([]);
+  const recordsPerPage = 10;
 
   useEffect(() => {
     fetchUsers();
@@ -20,6 +21,9 @@ const Users = () => {
       alert("No users found !");
     });
     setUsers(users);
+
+    //inital pagination
+    setRecordsPerPage(users.slice(0, recordsPerPage));
   };
 
   /**
@@ -94,7 +98,7 @@ const Users = () => {
         <Pagination
           records={filteredUserList}
           setRecordsPerPage={setRecordsPerPage}
-          pageSize={10}
+          pageSize={recordsPerPage}
         ></Pagination>
       </footer>
     </div>
