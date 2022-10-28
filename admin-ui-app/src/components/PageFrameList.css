@@ -1,0 +1,12 @@
+.page-header {
+  background-color: gray;
+}
+
+th {
+  text-transform: capitalize;
+}
+
+tr:hover,
+.selected {
+  background-color: gray;
+}
