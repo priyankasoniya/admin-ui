@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { APIs } from "./constants";
-import "./Users.css";
 import PageFrameList from "./components/PageFrameList";
 
 const Users = () => {
@@ -25,7 +24,7 @@ const Users = () => {
    * Method to delete the users
    * @param {Array} rows
    */
-  const handleDeleteRecords = (rows) => {
+  const handleDeleteUsers = (rows) => {
     let newRecords = [...users];
     const result = window.confirm(
       "You are trying to delete the user. Please note this cannot be reverted"
@@ -45,12 +44,26 @@ const Users = () => {
     }
   };
 
+  /**
+   * handles updation to users
+   * @param {Object} recordToUpdate
+   */
+  const handleUpdateUsers = (recordToUpdate) => {
+    let newRecords = [...users];
+    const index = users.indexOf(
+      users.find((user) => user.id === recordToUpdate.id)
+    );
+    newRecords.splice(index, 1, recordToUpdate);
+    setUsers(newRecords);
+  };
+
   return (
     users.length !== 0 && (
       <PageFrameList
         records={users}
         pageSize={pageSize}
-        handleDeleteRecords={handleDeleteRecords}
+        handleDeleteRecords={handleDeleteUsers}
+        handleUpdateRecord={handleUpdateUsers}
       ></PageFrameList>
     )
   );

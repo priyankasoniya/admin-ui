@@ -1,4 +1,4 @@
-import { render, waitFor, fireEvent } from "@testing-library/react";
+import { render, waitFor, fireEvent, screen } from "@testing-library/react";
 import App from "./App";
 
 const originalError = console.error;
@@ -21,8 +21,6 @@ test("test the app for initial states", async () => {
   debug();
   expect(getByText("@ 2022 Admin UI")).toBeInTheDocument();
   expect(getByText("Users")).toBeInTheDocument();
-
-  //
 });
 
 const mockResponse = [
@@ -70,10 +68,11 @@ test("test app for the mocked users data", async () => {
       json: () => Promise.resolve(mockResponse),
     })
   );
-  const { debug, getByText, getByRole } = render(<App />);
+  const { debug, getByText } = render(<App />);
   window.alert = () => {};
   await waitFor(() => expect(getByText("search")).toBeInTheDocument());
   debug();
-  fireEvent.change(screen.getByText("search"));
-  // expect(getByText("Users")).toBeInTheDocument();
+  fireEvent.change(screen.getByText("search"), {
+    e: { target: { value: "Chetan" } },
+  });
 });

@@ -1,50 +1,66 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./pagination.scss";
 
 const Pagination = (props) => {
   const [pageNo, setPageNo] = useState(0);
-  const { handleRowsPerPage, recordCount, pageSize } = props;
+  const [pageNumbers, setPageNumbers] = useState([]);
+  const { handleRowsPerPage, recordCount, pageSize, siblingCount = 1 } = props;
   const totalPages = Math.ceil(recordCount / pageSize);
-  // const totalPages = 11;
-  let siblingCount = 1;
-  let boundaryCount = 1;
-  let dots = 2;
-  let range = (siblingCount + boundaryCount) * 2 + dots + 1;
+  // calculate page number range as (siblingCount + boundaryCount) * 2 + dots + 1
+  const range = (siblingCount + 1) * 2 + 3;
   const lastIndex = totalPages - 1;
 
+  /**
+   * sets the page number clicked by user
+   * @param {Integer} pageNumber
+   */
   const handleClickOnButtons = (pageNumber) => {
     setPageNo(pageNumber);
     handleRowsPerPage(pageNumber);
   };
 
-  const getArray = () => {
+  /**
+   * side effect handles the logic of showing pages for pagination
+   */
+  useEffect(() => {
     let pageNumbers = [...Array(totalPages).keys()];
-    let finalArray;
+    let newPageNumbers;
     if (totalPages > range) {
-      const showRightDots = pageNo < lastIndex - 3;
-      const showLeftDots = pageNo > 3;
-      if (pageNo < 4) {
-        console.log("first condi");
-        //To check if the page no is first few elements
-        finalArray = [...[...Array(5).keys()], "dots", ...[lastIndex]];
-      } else if (pageNo > lastIndex - 4) {
-        console.log("second condi");
-        finalArray = [0, "dots", ...pageNumbers.slice(lastIndex - 4)];
+      //no of pages on the each of middle element
+      const sideElements = Math.floor(range / 2);
+      const showRightDots = pageNo < lastIndex - sideElements;
+      const showLeftDots = pageNo > sideElements;
+
+      if (pageNo <= sideElements) {
+        //If the current page number lies in the left side partition
+        newPageNumbers = [
+          ...[...Array(range - 2).keys()],
+          "dots",
+          ...[lastIndex],
+        ];
+      } else if (pageNo >= lastIndex - sideElements) {
+        //If the current page number lies in the right side partition
+        newPageNumbers = [
+          0,
+          "dots",
+          ...pageNumbers.slice(lastIndex - sideElements - 1),
+        ];
       } else {
-        console.log("lastcond");
-        const middleArray = pageNumbers.slice(pageNo - 1, pageNo + 2);
-        finalArray = showRightDots
+        const middleArray = pageNumbers.slice(
+          pageNo - siblingCount,
+          pageNo + siblingCount + 1
+        );
+        newPageNumbers = showRightDots
           ? showLeftDots
             ? [0, "dots", ...middleArray, "dots", ...[lastIndex]]
             : [0, ...middleArray, "dots", ...[lastIndex]]
-          : showLeftDots
-          ? [0, "dots", ...middleArray, ...[lastIndex]]
-          : [0, ...middleArray, ...[lastIndex]];
+          : [0, "dots", ...middleArray, ...[lastIndex]];
       }
-      pageNumbers = finalArray;
+      pageNumbers = newPageNumbers;
     }
-    return pageNumbers;
-  };
+    setPageNumbers(pageNumbers);
+  }, [totalPages, pageSize, pageNo, siblingCount]);
+
   return (
     <div id={"pagination-container"}>
       <button
@@ -61,12 +77,12 @@ const Pagination = (props) => {
       >
         {"<"}
       </button>
-      {getArray().map((page, index) => (
+      {pageNumbers.map((page, index) => (
         <button
           key={index}
           id="numbered-button"
           disabled={pageNo === page}
-          onClick={() => handleClickOnButtons(page)}
+          onClick={() => page !== "dots" && handleClickOnButtons(page)}
         >
           {page === "dots" ? "..." : page + 1}
         </button>
