@@ -1,0 +1,17 @@
+$primary-main: #3473b9;
+$primary-dark: #2468a4;
+$secondary: #aab2bd;
+
+#pagination-container {
+  button {
+    background-color: inherit;
+    border: none;
+    color: $primary-main;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 2px 8px;
+    &:disabled {
+      color: $secondary;
+    }
+  }
+}

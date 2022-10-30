@@ -1,0 +1,57 @@
+#main-container {
+  height: 100%;
+  header {
+    justify-content: flex-end;
+    top: 0px;
+    height: 26px;
+    background-color: #00001e;
+    .material-symbols-outlined {
+      color: white;
+      font-size: 16px;
+      margin-right: 8px;
+    }
+  }
+
+  footer {
+    justify-content: center;
+    bottom: 0px;
+    background-color: #d5d5d5;
+    height: 18px;
+    p {
+      font-size: 12px;
+    }
+  }
+
+  header,
+  footer {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    position: fixed;
+  }
+
+  .content {
+    margin-bottom: 18px;
+    .tabs {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      // position: fixed;
+      margin-top: 26px;
+      .tab {
+        flex-basis: 7%;
+        p {
+          font-weight: 600;
+          padding-left: 16px;
+          margin: 8px 0px 8px 0px;
+        }
+      }
+      .active {
+        border-bottom: 2px solid #3473b9;
+      }
+    }
+    .tabContainer {
+      max-height: calc(100%-18px);
+    }
+  }
+}

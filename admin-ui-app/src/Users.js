@@ -18,12 +18,42 @@ const Users = () => {
     const users = await (await fetch(APIs.GET_USERS)).json().catch(() => {
       alert("No users found !");
     });
-    setUsers(users);
+    users && setUsers(users);
   };
 
-  return <PageFrameList records={users} pageSize={pageSize}></PageFrameList>;
+  /**
+   * Method to delete the users
+   * @param {Array} rows
+   */
+  const handleDeleteRecords = (rows) => {
+    let newRecords = [...users];
+    const result = window.confirm(
+      "You are trying to delete the user. Please note this cannot be reverted"
+    );
+    if (result) {
+      if (rows.length > 1) {
+        rows.forEach((row) => {
+          const index = newRecords.indexOf(row);
+          newRecords.splice(index, 1);
+        });
+        setUsers(newRecords);
+      } else {
+        const index = users.indexOf(rows[0]);
+        newRecords.splice(index, 1);
+        setUsers(newRecords);
+      }
+    }
+  };
+
+  return (
+    users.length !== 0 && (
+      <PageFrameList
+        records={users}
+        pageSize={pageSize}
+        handleDeleteRecords={handleDeleteRecords}
+      ></PageFrameList>
+    )
+  );
 };
 
 export default Users;
-
-///side effect for filteration ?? as for every render it will be calculated

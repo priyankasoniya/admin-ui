@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import Pagination from "./Pagination";
-import "./PageFrameList.css";
+import "./PageFrameList.scss";
 
 const PageFrameList = (props) => {
-  const { records, pageSize } = props;
+  const { records, pageSize, handleDeleteRecords } = props;
   const [rows, setRows] = useState("");
   const [filteredRecords, setFilteredRecords] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [recordToUpdate, setRecordToUpdate] = useState({});
   let interval;
 
   useEffect(() => {
@@ -70,68 +72,108 @@ const PageFrameList = (props) => {
     }
   };
 
-  console.log(selectedRows, "render");
   return (
-    <>
+    <div id="page-frame-list">
       <div className="page-header">
-        <input
-          type="search"
-          placeholder="Search..."
-          onChange={handleSearch}
-        ></input>
-        {selectedRows.length !== 0 && <button>Delete</button>}
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="Search..."
+            onChange={handleSearch}
+          ></input>
+          <span className="material-symbols-outlined">search</span>
+        </div>
+        {selectedRows.length !== 0 && (
+          <button
+            className="delete-button"
+            onClick={() => handleDeleteRecords(selectedRows)}
+          >
+            Delete Selected
+          </button>
+        )}
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>
-              <input
-                type="checkbox"
-                onChange={handleSelectAllRows}
-                checked={selectedRows.length === pageSize}
-              ></input>
-            </th>
-            {records?.length !== 0 &&
-              Object.keys(records[0])?.map(
-                (key) => key !== "id" && <th key={key}>{key}</th>
-              )}
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows && rows.length !== 0 ? (
-            rows.map((row) => (
-              <tr key={row.id}>
-                <td>
-                  <input
-                    type="checkbox"
-                    onChange={(e) => {
-                      handleSelectRows(e, row);
-                    }}
-                    checked={selectedRows.includes(row)}
-                  ></input>
-                </td>
-                {Object.keys(row).map(
-                  (key) => key !== "id" && <td key={key}>{row[key] || "-"}</td>
-                )}
-                <td>{row.name}</td>
-              </tr>
-            ))
-          ) : (
+      <div className="page-body">
+        <table>
+          <thead>
             <tr>
-              <td>No records found !</td>
+              <th>
+                <input
+                  type="checkbox"
+                  onChange={handleSelectAllRows}
+                  checked={selectedRows.length === pageSize}
+                ></input>
+              </th>
+              {records?.length !== 0 &&
+                Object.keys(records[0])?.map(
+                  (key) => key !== "id" && <th key={key}>{key}</th>
+                )}
+              <th>Actions</th>
             </tr>
-          )}
-        </tbody>
-      </table>
-      <div>
+          </thead>
+          <tbody>
+            {rows && rows.length !== 0 ? (
+              rows.map((row) => (
+                <tr
+                  key={row.id}
+                  className={selectedRows.includes(row) ? "selected-row" : ""}
+                >
+                  <td>
+                    <input
+                      type="checkbox"
+                      onChange={(e) => {
+                        handleSelectRows(e, row);
+                      }}
+                      checked={selectedRows.includes(row)}
+                    ></input>
+                  </td>
+                  {Object.keys(row).map(
+                    (key) =>
+                      key !== "id" && <td key={key}>{row[key] || "-"}</td>
+                  )}
+                  <td>
+                    <div>
+                      <span
+                        className="material-symbols-outlined"
+                        onClick={() => {
+                          setIsEditMode(true);
+                          setRecordToUpdate(row);
+                        }}
+                      >
+                        edit
+                      </span>
+                      <span
+                        className="material-symbols-outlined delete-icon"
+                        onClick={() => {
+                          handleDeleteRecords([row]);
+                        }}
+                      >
+                        delete
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={10}
+                  style={{ textAlign: "center", border: "none" }}
+                >
+                  No records found !
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+      <div className="page-footer">
         <Pagination
           recordCount={filteredRecords.length}
           handleRowsPerPage={handleRowsPerPage}
           pageSize={pageSize}
         ></Pagination>
       </div>
-    </>
+    </div>
   );
 };
 
